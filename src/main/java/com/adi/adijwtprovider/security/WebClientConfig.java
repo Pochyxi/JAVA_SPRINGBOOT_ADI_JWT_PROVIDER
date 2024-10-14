@@ -6,9 +6,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
 public class WebClientConfig {
-
-    private static final String BASE_URL = "http://localhost:8082/api/user";
-
     private final SecurityProperties securityProperties;
 
     public WebClientConfig(SecurityProperties securityProperties) {
@@ -20,9 +17,10 @@ public class WebClientConfig {
         // Usa l'utente di lettura per l'autenticazione (modifica secondo le tue esigenze)
         String username = securityProperties.getWrite().getUsername();
         String password = securityProperties.getWrite().getPassword();
+        String base = securityProperties.getEndpoint().getBase();
 
         return WebClient.builder()
-                .baseUrl(BASE_URL)
+                .baseUrl(base)
                 .defaultHeaders(headers -> headers.setBasicAuth(username, password))
                 .build();
     }

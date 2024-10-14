@@ -26,6 +26,17 @@ public class SecurityProperties {
     private User write;
 
     /**
+     * Proprietà per l'endpoint.
+     */
+    private Endpoint endpoint;
+
+    @Getter
+    @Setter
+    public static class Endpoint {
+        private String base;
+    }
+
+    /**
      * Classe interna che rappresenta un utente con username e password.
      */
     @Setter
