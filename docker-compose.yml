@@ -1,0 +1,19 @@
+name: smartaxcy-jjwtprovider  # Nome del progetto Docker Compose
+
+# Definizione del nuovo servizio (nuova applicazione Spring Boot)
+services:
+  jjwtproviderapp:  # Servizio per l'applicazione Spring Boot
+    build:
+      context: .  # Usa il Dockerfile presente nella directory corrente
+      dockerfile: Dockerfile  # Specifica il Dockerfile per la seconda app
+    container_name: jjwt-provider-container  # Nome del container per la seconda applicazione
+    restart: unless-stopped  # Riavvia automaticamente il container se viene fermato
+    ports:
+      - "8089:8080"  # Espone la porta 8081 del host, mappandola sulla porta 8080 dell'app
+    networks:
+      postgres-pgadmin-smartaxcy_nt_smartaxcy:  # Connetti l'app alla rete esistente "nt_smartaxcy"
+
+# Riferimento alla rete esistente
+networks:
+  postgres-pgadmin-smartaxcy_nt_smartaxcy:
+    external: true  # Usa una rete esterna (esistente)
