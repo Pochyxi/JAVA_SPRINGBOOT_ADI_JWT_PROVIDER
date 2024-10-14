@@ -1,0 +1,87 @@
+package com.adi.adijwtprovider.service.impl;
+
+import com.adi.adijwtprovider.dto.*;
+import com.adi.adijwtprovider.exception.ErrorCodeList;
+import com.adi.adijwtprovider.exception.ResourceNotFoundException;
+import com.adi.adijwtprovider.exception.appException;
+import com.adi.adijwtprovider.models.User;
+import com.adi.adijwtprovider.security.JwtTokenProvider;
+import com.adi.adijwtprovider.service.AuthenticationService;
+import com.adi.adijwtprovider.service.UserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+
+
+@Service
+@RequiredArgsConstructor
+public class AuthenticationServiceImpl implements AuthenticationService {
+
+    private final AuthenticationManager authenticationManager;
+
+    private final UserService userService;
+
+    private final JwtTokenProvider jwtTokenProvider;
+
+
+    /* LOGIN
+        * Questo metodo gestisce il processo di autenticazione di un utente.
+     */
+    @Override
+    public JwtAuthResponseDTO login( String username, String password ) {
+
+        // Controlla se l'username o l'email forniti esistono nel database.
+        if (!userService.existsByUsernameOrEmail(username)) {
+            throw new appException(HttpStatus.BAD_REQUEST, ErrorCodeList.BADCREDENTIALS);
+        }
+
+        // Autentica l'utente utilizzando l'oggetto AuthenticationManager.
+        Authentication authentication =
+                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+
+        // Imposta l'oggetto Authentication nel SecurityContext.
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        // Recupera l'utente dal database
+        UserDTOInternal user = userService.findByUsernameOrEmail(username)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        ErrorCodeList.NF404
+                ));
+
+        // Crea un nuovo oggetto UserDTO e popola i suoi campi con i dati dell'utente.
+        // Per evitare di mostrare la password, non viene incluso il campo password.
+        UserDTO userDTO = UserDTO.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .isEnabled( user.isEnabled() )
+                .isTemporaryPassword( user.isTemporaryPassword() )
+                .dateTokenCheck( user.getDateTokenCheck() )
+                .profileName( user.getProfileName() )
+                .profilePermissions( user.getProfilePermissions() )
+                .build();
+
+        // Crea un nuovo oggetto JwtAuthResponseDTO e popola i suoi campi con il token di accesso e l'utente.
+        JwtAuthResponseDTO jwtAuthResponseDTO = new JwtAuthResponseDTO();
+        jwtAuthResponseDTO.setAccessToken(jwtTokenProvider.generateToken(authentication));
+        jwtAuthResponseDTO.setUser( userDTO );
+
+
+        // Restituisce l'oggetto JwtAuthResponseDTO.
+        return jwtAuthResponseDTO;
+    }
+
+    /* SIGNUP
+     * Questo metodo gestisce il processo di registrazione di un utente.
+     */
+    public Void createUser( SignupDTO signupDTO, boolean confEmail) {
+
+        // Salva l'utente nel database.
+        return userService.save(signupDTO);
+    }
+
+}
