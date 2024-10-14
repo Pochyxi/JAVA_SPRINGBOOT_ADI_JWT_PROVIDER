@@ -1,24 +1,15 @@
 package com.adi.adijwtprovider.security;
 
-
-import com.adi.adijwtprovider.dto.UserDTOInternal;
-import com.adi.adijwtprovider.exception.ErrorCodeList;
-import com.adi.adijwtprovider.exception.ResourceNotFoundException;
-import com.adi.adijwtprovider.exception.appException;
-import com.adi.adijwtprovider.models.User;
 import com.adi.adijwtprovider.service.UserService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Date;
 
 @Component
@@ -33,7 +24,7 @@ public class JwtTokenProvider {
     private long jwtExpirationInMs;
 
     @Autowired
-    public JwtTokenProvider( UserService userService) {
+    public JwtTokenProvider( UserService userService ) {
         this.userService = userService;
     }
 
@@ -68,63 +59,6 @@ public class JwtTokenProvider {
         return Keys.hmacShaKeyFor(
                 Decoders.BASE64.decode( jwtSecret )
         );
-    }
-
-
-    /* GET USERNAME FROM JWT
-        * Questo metodo recupera l'username dell'utente dal token.
-     */
-    public String getUsernameFromJWT( String token ) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey( key() )
-                .build()
-                .parseClaimsJws( token )
-                .getBody();
-
-        return claims.getSubject();
-    }
-
-    /* VALIDATE TOKEN
-        * Questo metodo controlla se il token è valido.
-     */
-    public boolean validateToken( String authToken ) {
-        try {
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey( key() )
-                    .build()
-                    .parseClaimsJws( authToken )
-                    .getBody();
-
-
-            Date issuedAt = claims.getIssuedAt();
-            String username = claims.getSubject();
-
-            LocalDateTime issuedAtLocalDateTime = issuedAt.toInstant()
-                    .atZone(ZoneId.systemDefault())
-                    .toLocalDateTime();
-
-            UserDTOInternal user = userService.findByUsernameOrEmail(username).orElseThrow(
-                    () -> new ResourceNotFoundException(ErrorCodeList.NF404)
-            );
-
-            if ( issuedAtLocalDateTime.isBefore(user.getDateTokenCheck())) throw new appException(
-                    HttpStatus.BAD_REQUEST, ErrorCodeList.TOKENOBSOLETE
-            );
-
-
-
-            return true;
-
-        } catch( MalformedJwtException ex ) {
-            System.out.println( "Token non valido" );
-        } catch( ExpiredJwtException ex ) {
-            System.out.println( "Token JWT scaduto" );
-        } catch( UnsupportedJwtException ex ) {
-            System.out.println( "Token JWT non supportato" );
-        } catch( IllegalArgumentException ex ) {
-            System.out.println( "Token JWT vuoto" );
-        }
-        return false;
     }
 
 }

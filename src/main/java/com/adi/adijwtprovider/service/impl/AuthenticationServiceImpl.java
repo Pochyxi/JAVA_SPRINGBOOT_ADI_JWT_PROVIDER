@@ -4,7 +4,6 @@ import com.adi.adijwtprovider.dto.*;
 import com.adi.adijwtprovider.exception.ErrorCodeList;
 import com.adi.adijwtprovider.exception.ResourceNotFoundException;
 import com.adi.adijwtprovider.exception.appException;
-import com.adi.adijwtprovider.models.User;
 import com.adi.adijwtprovider.security.JwtTokenProvider;
 import com.adi.adijwtprovider.service.AuthenticationService;
 import com.adi.adijwtprovider.service.UserService;
@@ -73,15 +72,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         // Restituisce l'oggetto JwtAuthResponseDTO.
         return jwtAuthResponseDTO;
-    }
-
-    /* SIGNUP
-     * Questo metodo gestisce il processo di registrazione di un utente.
-     */
-    public Void createUser( SignupDTO signupDTO, boolean confEmail) {
-
-        // Salva l'utente nel database.
-        return userService.save(signupDTO);
     }
 
 }

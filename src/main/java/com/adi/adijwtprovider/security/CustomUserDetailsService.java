@@ -2,12 +2,9 @@ package com.adi.adijwtprovider.security;
 
 
 import com.adi.adijwtprovider.dto.ProfilePermissionDTO;
-import com.adi.adijwtprovider.dto.UserDTO;
 import com.adi.adijwtprovider.dto.UserDTOInternal;
 import com.adi.adijwtprovider.exception.ErrorCodeList;
 import com.adi.adijwtprovider.exception.appException;
-import com.adi.adijwtprovider.models.ProfilePermission;
-import com.adi.adijwtprovider.models.User;
 import com.adi.adijwtprovider.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

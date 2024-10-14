@@ -11,7 +11,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
 import java.util.List;
@@ -21,14 +20,12 @@ import java.util.List;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final AuthEntryPoint authEntryPoint;
 
-    public SecurityConfig( JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
-                           JwtAuthenticationFilter jwtAuthenticationFilter ) {
-        this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+
+    public SecurityConfig( AuthEntryPoint authEntryPoint ) {
+        this.authEntryPoint = authEntryPoint;
     }
 
 
@@ -89,26 +86,22 @@ public class SecurityConfig {
 
                 ) )
                 .csrf( AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests( ( authorize ) -> authorize
-                        // TUTTE LE RICHIESTE CHE INIZIANO CON /API/AUTH/ SONO ACCESSIBILI DA TUTTI
-                        .requestMatchers( "/api/auth/**" ).permitAll()
+                .authorizeHttpRequests( (authorize) -> authorize
+                        // Permetti l'accesso a /api/auth/** e / in un unico requestMatcher
+                        .requestMatchers("/api/auth/**", "/").permitAll()
 
-                        // SERVIREBBE NEL CASO SI IMPLEMENTA LO SWAGGER PER REINDIRIZZARE A TALE PAGINA
-                        .requestMatchers( "/" ).permitAll()
-
-                        // TUTTE LE ALTRE RICHIESTE SONO ACCESSIBILI SOLO DA UTENTI AUTENTICATI
-                        .anyRequest().authenticated() ).exceptionHandling( exception -> exception
-
-                        // GESTIONE DELLE ECCEZIONI
-                        .authenticationEntryPoint( jwtAuthenticationEntryPoint ) )
+                        // Blocca tutte le altre richieste (richiede autenticazione)
+                        .anyRequest().denyAll()
+                )
+                .exceptionHandling( exception -> exception
+                        // Gestione delle eccezioni per utenti non autenticati che cercano di accedere a risorse protette
+                        .authenticationEntryPoint(authEntryPoint)
+                )
 
                 // GESTIONE DELLA SESSIONE STATELESS
                 .sessionManagement( session -> session
                         .sessionCreationPolicy( SessionCreationPolicy.STATELESS )
                 );
-
-        // AGGIUNGO IL FILTRO PER LA GESTIONE DELL'AUTENTICAZIONE JWT
-        http.addFilterBefore( jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class );
 
         return http.build();
     }

@@ -1,11 +1,7 @@
 package com.adi.adijwtprovider.service;
 
 import com.adi.adijwtprovider.dto.ProfilePermissionDTO;
-import com.adi.adijwtprovider.dto.SignupDTO;
-import com.adi.adijwtprovider.dto.UserDTO;
 import com.adi.adijwtprovider.dto.UserDTOInternal;
-import com.adi.adijwtprovider.models.ProfilePermission;
-import com.adi.adijwtprovider.models.User;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -29,27 +25,6 @@ public class ApiService {
                 .bodyToMono( UserDTOInternal.class);
     }
 
-    Mono<User> getUserById(Long id) {
-        return webClient.get()
-                .uri("/{id}", id)
-                .retrieve()
-                .bodyToMono( User.class);
-    }
-
-    public Mono<Boolean> existsByUsername(String username) {
-        return webClient.get()
-                .uri("/username/exist/{username}", username)
-                .retrieve()
-                .bodyToMono( Boolean.class);
-    }
-
-    public Mono<Boolean> existsByEmail(String email) {
-        return webClient.get()
-                .uri("/email/exist/{email}", email)
-                .retrieve()
-                .bodyToMono( Boolean.class);
-    }
-
     public Mono<Boolean> existsByUsernameOrEmail(String usernameOrEmail) {
         return webClient.get()
                 .uri("/username_email/exist/{usernameOrEmail}", usernameOrEmail)
@@ -63,13 +38,5 @@ public class ApiService {
                 .retrieve()
                 .bodyToFlux( ProfilePermissionDTO.class)
                 .collect( Collectors.toSet());
-    }
-
-    public Mono<Void> signup( SignupDTO signupDTO ) {
-        return webClient.post()
-                .uri("/signup")
-                .bodyValue( signupDTO )
-                .retrieve()
-                .bodyToMono( Void.class);
     }
 }
