@@ -22,8 +22,6 @@ public class ProfilePermissionDTO {
 
     private int valueUpdate;
 
-
     private int valueDelete;
-
 
 }

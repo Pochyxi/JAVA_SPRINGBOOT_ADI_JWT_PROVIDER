@@ -23,20 +23,4 @@ public class Profile {
 
     private Set<ProfilePermission> profilePermissions;
 
-
-    public Profile( ProfileList profileName ) {
-
-        this.name = profileName;
-
-        switch (this.name) {
-
-            case ADMIN -> this.power = 0;
-
-            case USER -> this.power = 10;
-
-            default -> this.power = 100;
-        }
-
-    }
-
 }

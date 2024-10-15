@@ -5,8 +5,8 @@ import com.adi.adijwtprovider.dto.ProfilePermissionDTO;
 import com.adi.adijwtprovider.dto.UserDTOInternal;
 import com.adi.adijwtprovider.exception.ErrorCodeList;
 import com.adi.adijwtprovider.exception.appException;
-import com.adi.adijwtprovider.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.adi.adijwtprovider.service.impl.UserServiceImpl;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -19,13 +19,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Service
+@RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
-    private final UserService userService;
 
-    @Autowired
-    public CustomUserDetailsService( UserService userService) {
-        this.userService = userService;
-    }
+    private final UserServiceImpl userService;
 
 
     /* LOAD USER BY USERNAME

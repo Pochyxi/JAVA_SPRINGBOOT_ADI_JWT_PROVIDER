@@ -14,6 +14,7 @@ public class WebClientConfig {
 
     @Bean
     public WebClient webClient() {
+
         // Usa l'utente di lettura per l'autenticazione (modifica secondo le tue esigenze)
         String username = securityProperties.getWrite().getUsername();
         String password = securityProperties.getWrite().getPassword();

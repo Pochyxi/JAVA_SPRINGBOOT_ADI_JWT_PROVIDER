@@ -11,6 +11,7 @@ import java.util.Set;
 @Getter
 @Setter
 public class UserDTOInternal {
+
     private Long id;
 
     private String username;

@@ -6,7 +6,6 @@ import com.adi.adijwtprovider.exception.ResourceNotFoundException;
 import com.adi.adijwtprovider.exception.appException;
 import com.adi.adijwtprovider.security.JwtTokenProvider;
 import com.adi.adijwtprovider.service.AuthenticationService;
-import com.adi.adijwtprovider.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,7 +21,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final AuthenticationManager authenticationManager;
 
-    private final UserService userService;
+    private final UserServiceImpl userService;
 
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -53,16 +52,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         // Crea un nuovo oggetto UserDTO e popola i suoi campi con i dati dell'utente.
         // Per evitare di mostrare la password, non viene incluso il campo password.
-        UserDTO userDTO = UserDTO.builder()
-                .id(user.getId())
-                .username(user.getUsername())
-                .email(user.getEmail())
-                .isEnabled( user.isEnabled() )
-                .isTemporaryPassword( user.isTemporaryPassword() )
-                .dateTokenCheck( user.getDateTokenCheck() )
-                .profileName( user.getProfileName() )
-                .profilePermissions( user.getProfilePermissions() )
-                .build();
+        UserDTO userDTO = mapUserDtoInternalToUserDto( user );
 
         // Crea un nuovo oggetto JwtAuthResponseDTO e popola i suoi campi con il token di accesso e l'utente.
         JwtAuthResponseDTO jwtAuthResponseDTO = new JwtAuthResponseDTO();
@@ -72,6 +62,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         // Restituisce l'oggetto JwtAuthResponseDTO.
         return jwtAuthResponseDTO;
+    }
+
+    public UserDTO mapUserDtoInternalToUserDto(UserDTOInternal user) {
+        return UserDTO.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .isEnabled( user.isEnabled() )
+                .isTemporaryPassword( user.isTemporaryPassword() )
+                .dateTokenCheck( user.getDateTokenCheck() )
+                .profileName( user.getProfileName() )
+                .profilePermissions( user.getProfilePermissions() )
+                .build();
     }
 
 }

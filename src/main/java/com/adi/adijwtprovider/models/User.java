@@ -30,7 +30,4 @@ public class User {
 
     private List<Confirmation> confirmation;
 
-    public User(){
-        this.dateTokenCheck= LocalDateTime.now();
-    }
 }

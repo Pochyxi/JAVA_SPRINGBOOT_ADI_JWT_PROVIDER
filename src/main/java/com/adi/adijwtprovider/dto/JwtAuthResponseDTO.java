@@ -16,5 +16,5 @@ public class JwtAuthResponseDTO {
 
     private String tokenType = "Bearer";
 
-    UserDTO user;
+    private UserDTO user;
 }
