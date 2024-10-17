@@ -16,13 +16,12 @@ public class WebClientConfig {
     public WebClient webClient() {
 
         // Usa l'utente di lettura per l'autenticazione (modifica secondo le tue esigenze)
-        String username = securityProperties.getWrite().getUsername();
-        String password = securityProperties.getWrite().getPassword();
-        String base = securityProperties.getEndpoint().getBase();
+        String apiKeyWrite = securityProperties.getApikey().getWrite();
+        String base = securityProperties.getApikey().getEndpoint().getBase();
 
         return WebClient.builder()
                 .baseUrl(base)
-                .defaultHeaders(headers -> headers.setBasicAuth(username, password))
+                .defaultHeader("X-API-KEY", apiKeyWrite)
                 .build();
     }
 }
